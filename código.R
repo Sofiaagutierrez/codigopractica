@@ -1,16 +1,12 @@
-# Rcapture package 
+# Rcapture package
 
+library(Rcapture)
+captura <- read.csv("~/Desktop/rcapture.csv", header = FALSE)
+View(captura)
 
+openp(captura, dfreq = FALSE, m = c("ep"), neg = TRUE)
 
-
-
-#Evaluar normalidad de datos Rcapture
-
-
-#ANOVA con datos Rcapture
-
-#Evaluar supuestos para hacer Regresión con datos Rcapture
-
+periodhist(captura, dfreq=FALSE, vt(18), drop=TRUE)
 
 
 #Paquete FSA
