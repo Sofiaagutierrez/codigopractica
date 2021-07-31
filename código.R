@@ -1,3 +1,19 @@
+#BaSTA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Rcapture package
 
 install.packages("Rcapture")
@@ -15,32 +31,79 @@ periodhist(captura, dfreq=FALSE, vt(18), drop=TRUE)
 
 #Evaluar normalidad para abundancia 
 
-normalidad_ab <- rnorm(n = 17, mean = 85.52352941  , sd =  21.29112284)
 
-plot(density(normalidad_ab))
+library("ggplot2")
+library("nortest")
 
-shapiro.test(normalidad_ab)$p.value
+ggplot(abyear) + geom_histogram(aes(x =  Abundance ,
+                y =..density..) , binwidth = 14, fill = "grey", color = "black")
+shapiro.test(abyear$Abundance)
 
 #Anova para abundancia Rcapture
 
-anova1 <-aov(Abundance ~  year  , data = abyear)
-  
-  
+anova1 <-aov(Abundance~as.factor(year), data = abyear)
+             
+          
 summary(anova1)
+
+TukeyHSD(aov(Abundance~as.factor(year), data = abyear))
+
+ptukey(anova1)
+
 
 #Evaluar normalidad para tasa de crecimiento
 
-normalidad_tc <- rnorm (n = 16, mean = 0.03068833919 , sd = 0.1390599991)
 
-plot(density(normalidad_tc))
+ggplot(anovaT) + geom_histogram(aes(x =  tc , y =..density..) , binwidth = 0.05, fill = "grey", color = "black")
+shapiro.test(anovaT$tc)
 
-shapiro.test(normalidad_tc)$p.value
+
+#Anova para tc Rcapture
+
+anova2 <-aov(deltaN ~  Año  , data = anovaTC)
+
+summary(anova2)
+
+#Regresion lineal 
+#contruir modelo
+
+library(Matrix)
+library(glmnet)
+regresion =   anovaT$tc ~ anovaT$y
+
+modelo1<- lm(regresion)
+summary(modelo1)
 
 #Evaluar linealidad tasa de crecimiento 
 
-#Evaluar
+plot(modelo1, 1)
+cor.test(anovaT$tc, anovaT$y)
+
+#Evaluar normalidad tasa de crecimiento 
+
+plot(modelo1, 2)
+shapiro.test(modelo1$residuals)
+
+#Evaluar homocedasticidad tasa de crecimiento 
+
+plot(modelo1, 3)
+library(carData)
+library(car)
+ncvTest(modelo1)
 
 
+#Regresion lineal 
+
+library(tidyverse)
+library(boot)
+library(QuantPsyc)
+library(ggplot2)
+
+model = lm(tc~ y , data = anovaT,  na.action=na.exclude)
+summary(model)
+
+grafica1 = ggplot(anovaT, aes(y,tc))
+grafica1+ geom_point() + geom_smooth(method = "lm" , colour = "Red" )
 
 
 #Paquete FSA
