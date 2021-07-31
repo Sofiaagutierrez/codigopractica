@@ -1,17 +1,40 @@
+
 #BaSTA
 
+library(sf)
+library(snow)
+library(snowfall)
+library("BaSTA")
+
+#importar datos 
+
+datosJ <- read.csv("~/Desktop/ubasta.csv", header = TRUE)
+
+View(datosJ)
+head(censusMat) #para ver las primeras 5 filas  
 
 
+#crear un data frame
+
+datosJ <- as.data.frame(datosJ,
+                        row.names = NULL, optional = FALSE,
+                        make.names = TRUE,
+                        stringsAsFactors = default.stringsAsFactors())
+
+length(datosJ) #data frame length is 26
+
+#para chequear si data está bien
+
+datosD <- DataCheck(datosJ, studyStart = 2004,
+                    studyEnd = 2020,  autofix = rep(1, 7),
+                    silent = FALSE)
+
+#analisis 
 
 
-
-
-
-
-
-
-
-
+multiout <- basta(object = datosD$newData, studyStart = 1999, studyEnd = 2018, model = "LO", 
+                  shape = "simple", niter = 50001, burnin = 5001, thinning = 50, 
+                  parallel = TRUE, ncpus = 4, nsim = 4)
 
 
 #Rcapture package
@@ -29,7 +52,7 @@ openp(captura, dfreq = FALSE, m = c("ep"), neg = TRUE)
 periodhist(captura, dfreq=FALSE, vt(18), drop=TRUE)
 
 
-#Evaluar normalidad para abundancia 
+#Evaluar normalidad para abundancia Rcapture
 
 
 library("ggplot2")
@@ -64,7 +87,7 @@ anova2 <-aov(deltaN ~  Año  , data = anovaTC)
 
 summary(anova2)
 
-#Regresion lineal 
+#Regresion lineal para TC
 #contruir modelo
 
 library(Matrix)
